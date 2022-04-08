@@ -17,63 +17,89 @@ connection.connect(() => {
     console.log('Database has been connected')
 });
 
-router.post('/signUp', (req, res) => {
-    const username = req.body.username;
-    const first_name = req.body.first_name;
-    const last_name = req.body.last_name;
-    const email = req.body.email;
-    const password = req.body.password;
-    const confirm_password = req.body.confirm_password;
-    signUp(username, first_name, last_name, email, password, confirm_password, res);
+router.post('/signUp', async(req, res) => {
+    try {
+        const username = req.body.username;
+        const first_name = req.body.first_name;
+        const last_name = req.body.last_name;
+        const email = req.body.email;
+        const password = req.body.password;
+        const confirm_password = req.body.confirm_password;
+        await signUp(username, first_name, last_name, email, password, confirm_password, res);
+        res.status(201).send("New user added")
+    }
+    catch(error) {
+        res.send({message : error})
+    }
 })
 
 function signUp(username, first_name, last_name, email, password, confirm_password, res) {
-    let sql = "INSERT INTO `accounts`(username, first_name, last_name, email, password, confirm_password) VALUES (?, ?, ?, ?, ?, ?)"
+    return new Promise((resolve, reject) => {
+        let sql = "INSERT INTO `accounts`(username, first_name, last_name, email, password, confirm_password) VALUES (?, ?, ?, ?, ?, ?)"
     
-    connection.query(sql, [username, first_name, last_name, email, password, confirm_password], (error, results, fields) => {
-        if (error) throw error
-        res.status(201).send("New user added")
+        connection.query(sql, [username, first_name, last_name, email, password, confirm_password], (error, results, fields) => {
+            if (error) reject(error)
+            resolve(true)
+    })
     })
 } 
 
-router.post('/log_in', (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    logIn(username, password, res);
+router.post('/log_in', async(req, res) => {
+    try {
+        const username = req.body.username;
+        const password = req.body.password;
+        await logIn(username, password, res);
+        res.status(201).send("User exists")
+    }
+    catch(error) {
+        if (error == false) {
+            res.status(201).send("User does not exist.")
+        }
+        else {
+            res.send({message : error})
+        }
+    }
 })
 
 function logIn(username, password, res) {
-    let sql = `SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`
-    connection.query(sql, (error, results, fields) => {
-        if (error) throw error
-
-        if (results.length == 1) {
-            res.status(201).send("User exists")
-        }
-        else {
-            res.status(201).send("User does not exist.")
-        }
-
-        // res.status(201).send(results[0].length)
-    });
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`
+        connection.query(sql, (error, results, fields) => {
+            if (error) reject(error)
+            if (results.length == 1) {
+                resolve(true)
+            }
+            else {
+                reject(false)
+            }
+        });
+    })
 }
 
-router.post('/add_new_goal', (req, res) => {
-    const account_id = req.body.account_id
-    const category = req.body.category;
-    const goal = req.body.goal;
-    const goal_status = req.body.goal_status;
-    const set_date = new Date()
-    // const date = req.body.date;
-    addNewGoal(account_id, category, goal, goal_status, set_date, res)
+router.post('/add_new_goal', async(req, res) => {
+    try {
+        const account_id = req.body.account_id
+        const category = req.body.category;
+        const goal = req.body.goal;
+        const goal_status = req.body.goal_status;
+        const set_date = new Date()
+        await addNewGoal(account_id, category, goal, goal_status, set_date, res)
+        res.status(201).send("New goal added")
+    }
+    catch(error) {
+        res.send({message : error})
+    }
 })
 
 function addNewGoal(account_id, category, goal, goal_status, set_date, res) {
-    let sql = "INSERT INTO `goals`(account_id, category, goal, goal_status, set_date) VALUES (?, ?, ?, ?, ?)"
+    return new Promise((resolve, reject) => {
+        let sql = "INSERT INTO `goals`(account_id, category, goal, goal_status, set_date) VALUES (?, ?, ?, ?, ?)"
 
-    connection.query(sql, [account_id, category, goal, goal_status, set_date], (error, results, fields) => {
-        if (error) throw error
-        res.status(201).send("New goal added")
+        connection.query(sql, [account_id, category, goal, goal_status, set_date], (error, results, fields) => {
+            if (error) reject(error)
+            resolve(true)
+            // res.status(201).send("New goal added")
+        })
     })
 }
 
