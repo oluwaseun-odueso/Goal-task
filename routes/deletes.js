@@ -14,9 +14,7 @@ var connection = mysql.createConnection({
     // insecureAuth : true 
 });
 
-connection.connect(() => {
-    console.log('Database has been connected')
-});
+connection.connect();
 
 router.delete('/:goalId', (req, res) => {
     connection.query(`DELETE FROM goals WHERE id = ${req.params.goalId}`, (error, result) => {

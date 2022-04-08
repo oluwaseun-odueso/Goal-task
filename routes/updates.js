@@ -13,9 +13,7 @@ var connection = mysql.createConnection({
     database : process.env.DB_DATABASE,
 });
 
-connection.connect(() => {
-    console.log('Database has been connected')
-});
+connection.connect();
 
 router.patch('/:accountId', async(req, res) => {
     try{
