@@ -98,7 +98,6 @@ function addNewGoal(account_id, category, goal, goal_status, set_date, res) {
         connection.query(sql, [account_id, category, goal, goal_status, set_date], (error, results, fields) => {
             if (error) reject(error)
             resolve(true)
-            // res.status(201).send("New goal added")
         })
     })
 }
