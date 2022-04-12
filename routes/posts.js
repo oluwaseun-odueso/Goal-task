@@ -1,9 +1,13 @@
 const express = require('express');
+const { is } = require('express/lib/request');
 const req = require('express/lib/request');
+const { set } = require('express/lib/response');
 const res = require('express/lib/response');
 const mysql = require('mysql');
+const bcrypt = require('bcrypt');
 require('dotenv').config()
 const router = express.Router();
+
 
 // Connect to Database
 var connection = mysql.createConnection({
@@ -17,73 +21,165 @@ connection.connect(() => {
     console.log('Database has been connected')
 });
 
-router.post('/signUp', async(req, res) => {
-    try {
-        const username = req.body.username;
-        const first_name = req.body.first_name;
-        const last_name = req.body.last_name;
-        const email = req.body.email;
-        const password = req.body.password;
-        const confirm_password = req.body.confirm_password;
-        await signUp(username, first_name, last_name, email, password, confirm_password, res);
-        res.status(201).send("New user added")
-    }
-    catch(error) {
-        res.send({message : error})
-    }
-})
-
-function signUp(username, first_name, last_name, email, password, confirm_password, res) {
+// Necessary functions
+function checkIfEnteredPasswordMatches(password, confirm_password) {
+    console.log(password, confirm_password)
     return new Promise((resolve, reject) => {
-        let sql = "INSERT INTO `accounts`(username, first_name, last_name, email, password, confirm_password) VALUES (?, ?, ?, ?, ?, ?)"
-    
-        connection.query(sql, [username, first_name, last_name, email, password, confirm_password], (error, results, fields) => {
-            if (error) reject(error)
+        if (password === confirm_password){
             resolve(true)
-    })
-    })
-} 
-
-router.post('/log_in', async(req, res) => {
-    try {
-        const username = req.body.username;
-        const password = req.body.password;
-        await logIn(username, password, res);
-        res.status(201).send("User exists")
-    }
-    catch(error) {
-        if (error == false) {
-            res.status(201).send("User does not exist.")
         }
         else {
-            res.send({message : error})
+            reject(false)
         }
-    }
-})
+    })
+}
 
-function logIn(username, password, res) {
+function checkIfUserExists(username) {
     return new Promise((resolve, reject) => {
-        let sql = `SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`
+        let sql = `SELECT * FROM accounts WHERE username = '${username}'`
         connection.query(sql, (error, results, fields) => {
             if (error) reject(error)
             if (results.length == 1) {
                 resolve(true)
             }
             else {
-                reject(false)
+                resolve(false)
             }
         });
     })
 }
 
+// function checkIfPasswordExists(password) {
+//     return new Promise((resolve, reject) => {
+//         let sql = `SELECT * FROM accounts WHERE password = '${password}'`
+//         connection.query(sql, (error, results, fields) => {
+//             if (error) reject(error)
+//             if (results.length == 1) {
+//                 resolve(true)
+//             }
+//             else {
+//                 resolve(false)
+//             }
+//         });
+//     })
+// }
+
+function checkIfEmailExists(email) {
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT * FROM accounts WHERE email = '${email}'`
+        connection.query(sql, (error, results, fields) => {
+            if (error) reject(error)
+            if (results.length == 1) {
+                resolve(true)
+            }
+            else {
+                resolve(false)
+            }
+        });
+    })
+}
+
+function hashEnteredPassword(password) {
+    return new Promise((resolve, reject) => {
+        const saltRounds = 10;
+        bcrypt.hash(password, saltRounds, function(err, hash) {
+            resolve(hash)
+        });
+    })
+}
+
+function checkIfEnteredPasswordEqualsHashed(password, hashedPassword) {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(password, hashedPassword, function(err, result) {
+            // result == true
+            console.log(result)
+            resolve(true)
+        });
+    })
+}
+
+function collectUsernameHashedPassword(username) {
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT password FROM accounts WHERE username = '${username}'`;
+        connection.query(sql, (error, results, fields) => {
+            if (error) reject(error)
+            console.log(results)
+            resolve(results)
+        })
+    })
+}
+
+router.post('/signUp', async(req, res) => {
+    if(req.body.username && req.body.first_name && req.body.last_name && req.body.email && req.body.password && req.body.confirm_password) {
+        try {
+            const check = await checkIfUserExists(req.body.username)
+            if (check === false) {
+                const checkEmail = await checkIfEmailExists(req.body.email);
+                if (checkEmail === false) {
+                    await checkIfEnteredPasswordMatches(req.body.password, req.body.confirm_password);
+                    const hashedPassword = await hashEnteredPassword(req.body.password)
+                    await addUserToAccount(req.body.username, req.body.first_name, req.body.last_name, req.body.email, hashedPassword, hashedPassword);
+                    res.status(201).send("New user added")
+                }
+                else {
+                    res.status(201).send({
+                        error:"115" ,
+                        message : "Can't add an existing email."
+                    })
+                }    
+            }
+            else {
+                res.status(201).send({
+                    error:"111" ,
+                    message : "Can't add an existing username."
+                })
+            }   
+        }
+        catch(error) {
+            res.send({message : error})
+        }
+    }
+    else res.status(500).send("All fields must be entered correctly")
+})
+
+function addUserToAccount(username, first_name, last_name, email, password, confirm_password) {
+    return new Promise((resolve, reject) => {
+        let sql = `INSERT INTO accounts (username, first_name, last_name, email, password, confirm_password) VALUES ('${username}', '${first_name}', '${last_name}', '${email}', '${password}', '${confirm_password}')`
+        connection.query(sql, (error, results, fields) => {
+            if (error) reject(error)
+            resolve(true)
+        })
+    })
+} 
+
+router.post('/log_in', async(req, res) => {
+    if(req.body.username && req.body.password){
+        try {
+            const results = await checkIfUserExists(req.body.username)
+            if (results === true) {
+                const hashedPW = await collectUsernameHashedPassword()
+                const checkPassword = await checkIfEnteredPasswordEqualsHashed(req.body.password, hashedPW)
+                if (checkPassword === true) {
+                    res.status(201).send("You're logged in")
+                } 
+                else res.status(400).send("Incorrect password.")
+            }
+            else {
+                res.status(400).send("Incorrect username")
+            }
+        }
+        catch(error) {
+            res.send({message : error})
+        }
+    }
+    else res.status(500).send("All inputs must be entered correctly")
+    
+    
+})
+
 router.post('/add_new_goal', async(req, res) => {
     try {
-        const account_id = req.body.account_id
-        const category = req.body.category;
-        const goal = req.body.goal;
-        const goal_status = req.body.goal_status;
-        const set_date = new Date()
-        await addNewGoal(account_id, category, goal, goal_status, set_date, res)
+        await addNewGoal(req.body.account_id, req.body.category, req.body.goal, req.body.goal_status, new Date())
         res.status(201).send("New goal added")
     }
     catch(error) {
@@ -91,10 +187,9 @@ router.post('/add_new_goal', async(req, res) => {
     }
 })
 
-function addNewGoal(account_id, category, goal, goal_status, set_date, res) {
+function addNewGoal(account_id, category, goal, goal_status, set_date) {
     return new Promise((resolve, reject) => {
         let sql = "INSERT INTO `goals`(account_id, category, goal, goal_status, set_date) VALUES (?, ?, ?, ?, ?)"
-
         connection.query(sql, [account_id, category, goal, goal_status, set_date], (error, results, fields) => {
             if (error) reject(error)
             resolve(true)
