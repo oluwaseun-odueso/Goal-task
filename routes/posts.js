@@ -1,8 +1,4 @@
 const express = require('express');
-const { is } = require('express/lib/request');
-const req = require('express/lib/request');
-const { set, json } = require('express/lib/response');
-const res = require('express/lib/response');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 require('dotenv').config()
