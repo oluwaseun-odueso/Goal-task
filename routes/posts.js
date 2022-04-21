@@ -1,24 +1,17 @@
 const express = require('express');
-const mysql = require('mysql');
+const connection = require('../server')
+const auth = require('./auth')
 const bcrypt = require('bcrypt');
 require('dotenv').config()
 const router = express.Router();
 
-// Connect to Database
-var connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : process.env.DB_USER,
-    password : process.env.DB_PASSWORD,
-    database : process.env.DB_DATABASE 
-});
+const app = express();
 
-connection.connect(() => {
-    console.log('Database has been connected')
-});
+const {generateToken, verifyToken} = auth
 
 // Necessary functions
 function checkIfEnteredPasswordMatches(password, confirm_password) {
-    console.log(password, confirm_password)
+    // console.log(password, confirm_password)
     return new Promise((resolve, reject) => {
         if (password === confirm_password){
             resolve(true)
@@ -59,9 +52,9 @@ function checkIfEmailExists(email) {
     })
 }
 
-function addUserToAccount(username, first_name, last_name, email, password, confirm_password) {
+function addUserToAccount(username, first_name, last_name, email, password) {
     return new Promise((resolve, reject) => {
-        let sql = `INSERT INTO accounts (username, first_name, last_name, email, password, confirm_password) VALUES ('${username}', '${first_name}', '${last_name}', '${email}', '${password}', '${confirm_password}')`
+        let sql = `INSERT INTO accounts (username, first_name, last_name, email, password) VALUES ('${username}', '${first_name}', '${last_name}', '${email}', '${password}')`
         connection.query(sql, (error, results, fields) => {
             if (error) reject(error)
             resolve(true)
@@ -106,6 +99,8 @@ function collectUsernameHashedPassword(username) {
     })
 }
 
+// const relevant = await verifyToken()
+
 router.post('/log_in', async(req, res) => {
     if(req.body.username && req.body.password){
         try {
@@ -114,6 +109,8 @@ router.post('/log_in', async(req, res) => {
                 const hashedPW = await collectUsernameHashedPassword(req.body.username)
                 const checkPassword = await checkIfEnteredPasswordEqualsHashed(req.body.password, hashedPW[0].password)
                 if (checkPassword === true) {
+                    const token = await generateToken(req.body.username)
+                    res.send(token)
                     res.status(201).send("You're logged in")
                 } 
                 else res.status(400).send("Incorrect password.")
@@ -131,7 +128,7 @@ router.post('/log_in', async(req, res) => {
     
 })
 
-router.post('/signUp', async(req, res) => {
+router.post('/signUp', verifyToken, async(req, res) => {
     if(req.body.username && req.body.first_name && req.body.last_name && req.body.email && req.body.password && req.body.confirm_password) {
         try {
             const check = await checkIfUserExists(req.body.username)
@@ -140,7 +137,7 @@ router.post('/signUp', async(req, res) => {
                 if (checkEmail === false) {
                     await checkIfEnteredPasswordMatches(req.body.password, req.body.confirm_password);
                     const hashedPassword = await hashEnteredPassword(req.body.password)
-                    await addUserToAccount(req.body.username, req.body.first_name, req.body.last_name, req.body.email, hashedPassword, hashedPassword);
+                    await addUserToAccount(req.body.username, req.body.first_name, req.body.last_name, req.body.email, hashedPassword);
                     res.status(201).send("New user added")
                 }
                 else {
