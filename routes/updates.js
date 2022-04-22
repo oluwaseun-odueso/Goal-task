@@ -1,6 +1,8 @@
 const express = require('express');
 const connection = require('../server')
+const functions = require('./routesFunctions')
 require('dotenv').config()
+const {update} = functions
 
 const router = express.Router();
 
@@ -17,14 +19,11 @@ router.patch('/:accountId', async(req, res) => {
     }
 })
 
-function update(userId, property, newValue, res) {
-    return new Promise((resolve, reject) => {
-        let sql = `UPDATE accounts SET ${property} = '${newValue}' WHERE id = ${userId}`
-        connection.query(sql, (error, results) => {
-            if (error) reject(error);
-            resolve(true)
-        })
+router.delete('/:goalId', (req, res) => {
+    connection.query(`DELETE FROM goals WHERE id = ${req.params.goalId}`, (error, result) => {
+        if (error) throw error
+        res.send('A goal has been deleted')
     })
-}
+})
 
 module.exports = router;

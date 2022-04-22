@@ -26,5 +26,4 @@ const tokenFunctions = {
     verifyToken
 }
 
-// module.exports = router
 module.exports = tokenFunctions
