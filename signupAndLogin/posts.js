@@ -1,6 +1,9 @@
 const express = require('express');
 const auth = require('./auth')
 const functions = require('../routes/routesFunctions')
+const connection = require('./databaseConnection')
+require('dotenv').config()
+
 const router = express.Router();
 const {generateToken, verifyToken} = auth
 const {checkIfEnteredPasswordMatches, 
@@ -17,18 +20,12 @@ router.post('/log_in', async(req, res) => {
     if(req.body.username && req.body.password){
         try {
             const results = await checkIfUserExists(req.body.username)
-            console.log('check 1')
             if (results === true) {
                 const hashedPW = await collectUsernameHashedPassword(req.body.username)
-                console.log('check 2')
                 const checkPassword = await checkIfEnteredPasswordEqualsHashed(req.body.password, hashedPW[0].password)
-                console.log('check 3')
                 if (checkPassword === true) {
                     const token = await generateToken(req.body.username)
-                    console.log('check 4')
-                    console.log(token)
-                    // res.send(token)
-                    res.status(201).send("You're logged in")
+                    res.status(201).send(token)
                 } 
                 else res.status(400).send("Incorrect password.")
             }

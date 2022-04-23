@@ -1,5 +1,5 @@
 const express = require('express');
-const connection = require('../server')
+const connection = require('./databaseConnection')
 const functions = require('./routesFunctions')
 require('dotenv').config()
 const {update} = functions

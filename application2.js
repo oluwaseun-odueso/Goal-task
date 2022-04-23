@@ -44,4 +44,4 @@ function authenticateToken(req, res, next) {
     })
 }
 
-app.listen(4000);
+app.listen(3000);
