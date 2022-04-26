@@ -5,11 +5,11 @@ const connection = require('../routes/databaseConnection')
 require('dotenv').config()
 
 const router = express.Router();
-const {generateToken} = auth
-const {propertyValue,
-    checkIfEnteredPasswordMatches, 
+const {generateToken, verifyToken} = auth
+const {checkIfEnteredPasswordMatches, 
     checkIfEmailExists, 
     checkIfUserExists, 
+    update,
     addUserToAccount, 
     hashEnteredPassword, 
     getBasicUserDetails,
@@ -31,7 +31,7 @@ router.post('/log_in', async(req, res) => {
 
                     const token = await generateToken(user)
 
-                    res.status(201).send({
+                    res.status(200).send({
                         message : "You have successfully logged in.", 
                         user, 
                         token
@@ -108,6 +108,24 @@ router.post('/signUp', async(req, res) => {
     else res.status(500).send({
         errno : "101", 
         message : "All fields must be entered correctly"})
+})
+
+router.patch('/update_account_details', verifyToken, async(req, res) => {
+    if (req.body.property && req.body.newValue) {
+        try{
+            await update(req.user.id, req.body.property, req.body.newValue)
+            res.status(201).send({message : "A value has been updated."})
+        }
+        catch(error) {
+            res.send({message : error})
+        }
+    }
+    else {
+        res.status(500).send({
+            error:"104" ,
+            message : "Property must be entered correctly."
+        })
+    }
 })
 
 module.exports = router

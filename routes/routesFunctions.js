@@ -23,9 +23,28 @@ function deleteGoal(id) {
     })
 }
 
-function getGoalsForId(id) {
+function returnGoalId(account_id){
     return new Promise((resolve, reject) => {
-        connection.query(`SELECT * FROM goals WHERE account_id = ${id}`, (error, result) => {
+        connection.query(`SELECT MAX(id) AS last_entry FROM goals WHERE account_id = ${account_id}`, (error, result) => {
+            if (error) reject(error)
+            // console.log(result)
+            resolve(result)
+        })
+    })
+}
+
+function getParticularGoalForId(goalId) {
+    return new Promise((resolve, reject) => {
+        connection.query(`SELECT * FROM goals WHERE id = ${goalId};`, (error, result) => {
+            if (error) reject(error)
+            resolve(result)
+        })
+    })
+}
+
+function getGoalsForId(accountId) {
+    return new Promise((resolve, reject) => {
+        connection.query(`SELECT * FROM goals WHERE account_id = ${accountId}`, (error, result) => {
             if (error) reject(error)
             resolve(result)
         })
@@ -166,6 +185,8 @@ const routesFunctions = {
     checkIfEnteredPasswordEqualsHashed,
     collectUsernameHashedPassword,
     update, 
+    returnGoalId,
+    getParticularGoalForId,
     deleteGoal,
     getGoalsForId,
     getAccountIdForGoal,

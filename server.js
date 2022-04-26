@@ -1,11 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const postsRoute = require('./signupAndLogin/posts');
-const updatesRoute = require('./routes/updates');
+const accountRoute = require('./signupAndLogin/account');
+const updatesRoute = require('./routes/goals');
 const app = express();
 
 app.use(bodyParser.json());
-app.use('/posts', postsRoute);
+app.use('/account', accountRoute);
 app.use('/updates', updatesRoute);
 
 // Connect to Database

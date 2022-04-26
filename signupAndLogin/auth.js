@@ -19,7 +19,10 @@ function verifyToken(req, res, next) {
     if (token == null) return res.sendStatus(401)
 
     jwt.verify(token, mySecretKey, function(err, user) {
-        if (err) return res.sendStatus(403)
+        if (err) return res.status(403).send({
+            errno : 106,
+            message : "Invalid token, please login again."
+        })
         req.user = user
         next()
     }) 
