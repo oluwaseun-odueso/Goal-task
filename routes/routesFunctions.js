@@ -1,7 +1,6 @@
 const express = require('express');
 const connection = require('./databaseConnection')
 const bcrypt = require('bcrypt');
-const { reject } = require('bcrypt/promises');
 require('dotenv').config()
 
 

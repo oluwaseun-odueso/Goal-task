@@ -1,5 +1,4 @@
 const express = require('express');
-const connection = require('./databaseConnection')
 const functions = require('./routesFunctions')
 const auth = require('../signupAndLogin/auth')
 require('dotenv').config()
