@@ -9,7 +9,7 @@ const {generateToken, verifyToken} = auth
 const {checkIfEnteredPasswordMatches, 
     checkIfEmailExists, 
     checkIfUserExists, 
-    update,
+    updateAccount,
     addUserToAccount, 
     hashEnteredPassword, 
     getBasicUserDetails,
@@ -113,7 +113,7 @@ router.post('/signUp', async(req, res) => {
 router.patch('/update_account_details', verifyToken, async(req, res) => {
     if (req.body.property && req.body.newValue) {
         try{
-            await update(req.user.id, req.body.property, req.body.newValue)
+            await updateAccount(req.user.id, req.body.property, req.body.newValue)
             res.status(201).send({message : "A value has been updated."})
         }
         catch(error) {

@@ -5,6 +5,36 @@ require('dotenv').config()
 
 
 // Necessary functions
+function editProperties(goal_id, category, goal, goal_status){
+    return new Promise((resolve, reject) => {
+        let sql = `UPDATE goals SET category= '${category}', goal= '${goal}', goal_status= '${goal_status}' WHERE id = ${goal_id}`
+        connection.query(sql, (error, results) => {
+            if (error) reject(error)
+            resolve(true)
+        })
+        // UPDATE goals SET category= 'caree', goal_status= 'Finished' WHERE id = 1;
+    })
+}
+
+function updateAccount(userId, property, newValue) {
+    return new Promise((resolve, reject) => {
+        let sql = `UPDATE accounts SET ${property} = '${newValue}' WHERE id = ${userId}`
+        connection.query(sql, (error, results) => {
+            if (error) reject(error);
+            resolve(true)
+        })
+    })
+}
+
+function getParticularGoalForId(goalId) {
+    return new Promise((resolve, reject) => {
+        connection.query(`SELECT * FROM goals WHERE id = ${goalId};`, (error, result) => {
+            if (error) reject(error)
+            resolve(result)
+        })
+    })
+}
+
 function getAccountIdForGoal(goalId) {
     return new Promise((resolve, reject) => {
         connection.query(`SELECT account_id FROM goals WHERE id = ${goalId}`, (error, result) => {
@@ -28,15 +58,6 @@ function returnGoalId(account_id){
         connection.query(`SELECT MAX(id) AS last_entry FROM goals WHERE account_id = ${account_id}`, (error, result) => {
             if (error) reject(error)
             // console.log(result)
-            resolve(result)
-        })
-    })
-}
-
-function getParticularGoalForId(goalId) {
-    return new Promise((resolve, reject) => {
-        connection.query(`SELECT * FROM goals WHERE id = ${goalId};`, (error, result) => {
-            if (error) reject(error)
             resolve(result)
         })
     })
@@ -164,15 +185,7 @@ function collectUsernameHashedPassword(username) {
     })
 }
 
-function update(userId, property, newValue) {
-    return new Promise((resolve, reject) => {
-        let sql = `UPDATE accounts SET ${property} = '${newValue}' WHERE id = ${userId}`
-        connection.query(sql, (error, results) => {
-            if (error) reject(error);
-            resolve(true)
-        })
-    })
-}
+
 
 const routesFunctions = {
     propertyValue,
@@ -184,7 +197,8 @@ const routesFunctions = {
     hashEnteredPassword,
     checkIfEnteredPasswordEqualsHashed,
     collectUsernameHashedPassword,
-    update, 
+    updateAccount, 
+    editProperties,
     returnGoalId,
     getParticularGoalForId,
     deleteGoal,

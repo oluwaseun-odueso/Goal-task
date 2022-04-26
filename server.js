@@ -1,15 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const accountRoute = require('./signupAndLogin/account');
-const updatesRoute = require('./routes/goals');
+const goalsRoute = require('./routes/goals');
 const app = express();
 
 app.use(bodyParser.json());
 app.use('/account', accountRoute);
-app.use('/updates', updatesRoute);
-
-// Connect to Database
-
+app.use('/goals', goalsRoute);
 
 
 // Get all
