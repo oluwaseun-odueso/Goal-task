@@ -5,26 +5,35 @@ require('dotenv').config()
 
 
 // Necessary functions
-function editProperties(goal_id, category, goal, goal_status){
+function updateGoalProperties(goal_id, category, goal, goal_status){
     return new Promise((resolve, reject) => {
-        let sql = `UPDATE goals SET category= '${category}', goal= '${goal}', goal_status= '${goal_status}' WHERE id = ${goal_id}`
+        let sql = `UPDATE goals SET category = '${category}', goal = '${goal}', goal_status = '${goal_status}' WHERE id = ${goal_id}`
         connection.query(sql, (error, results) => {
             if (error) reject(error)
             resolve(true)
         })
-        // UPDATE goals SET category= 'caree', goal_status= 'Finished' WHERE id = 1;
     })
 }
 
-function updateAccount(userId, property, newValue) {
+function updateAccountProperties(first_name, last_name, email, account_id) {
     return new Promise((resolve, reject) => {
-        let sql = `UPDATE accounts SET ${property} = '${newValue}' WHERE id = ${userId}`
+        let sql = `UPDATE accounts SET first_name = '${first_name}', last_name = '${last_name}', email = '${email}' WHERE id = ${account_id}`
         connection.query(sql, (error, results) => {
             if (error) reject(error);
             resolve(true)
         })
     })
 }
+
+// function changePassword (password, account_id) {
+//     return new Promise((resolve, reject) => {
+//         let sql = `UPDATE accounts SET password = '${password}' WHERE id = ${account_id}`
+//         connection.query(sql, (error, result) => {
+//             if (error) reject(error)
+//             resolve(result)
+//         })
+//     })
+// }
 
 function getParticularGoalForId(goalId) {
     return new Promise((resolve, reject) => {
@@ -72,9 +81,8 @@ function getGoalsForId(accountId) {
     })
 }
 
-function propertyValue (username, property) {
+function getPropertyValue (username, property) {
     return new Promise((resolve, reject) => {
-        // SELECT password FROM accounts WHERE username = 'Temitee';
         let sql = `SELECT ${property} FROM accounts WHERE username = '${username}'`;
         connection.query(sql, (error, results, fields) => {
             if (error) reject(error)
@@ -83,7 +91,18 @@ function propertyValue (username, property) {
     })
 }
 
-function getBasicUserDetails (username) {
+function getBasicUserDetailsById (id) {
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT id, username, first_name, last_name, email FROM accounts WHERE id = '${id}'`;
+        connection.query(sql, (error, results, fields) => {
+            if (error) reject(error)
+            resolve(results)
+        })
+    })
+}
+
+
+function getBasicUserDetailsByUsername (username) {
     return new Promise((resolve, reject) => {
         // SELECT password FROM accounts WHERE username = 'Temitee';
         let sql = `SELECT id, username, first_name, last_name, email FROM accounts WHERE username = '${username}'`;
@@ -94,7 +113,7 @@ function getBasicUserDetails (username) {
     })
 }
 
-function checkIfEnteredPasswordMatches(password, confirm_password) {
+function checkIfEnteredPasswordsMatches(password, confirm_password) {
     // console.log(password, confirm_password)
     return new Promise((resolve, reject) => {
         if (password === confirm_password){
@@ -185,11 +204,9 @@ function collectUsernameHashedPassword(username) {
     })
 }
 
-
-
 const routesFunctions = {
-    propertyValue,
-    checkIfEnteredPasswordMatches,
+    getPropertyValue,
+    checkIfEnteredPasswordsMatches,
     checkIfEmailExists,
     checkIfUserExists,
     addUserToAccount,
@@ -197,14 +214,16 @@ const routesFunctions = {
     hashEnteredPassword,
     checkIfEnteredPasswordEqualsHashed,
     collectUsernameHashedPassword,
-    updateAccount, 
-    editProperties,
+    updateAccountProperties, 
+    updateGoalProperties,
     returnGoalId,
+    // changePassword,
     getParticularGoalForId,
     deleteGoal,
     getGoalsForId,
     getAccountIdForGoal,
-    getBasicUserDetails
+    getBasicUserDetailsById,
+    getBasicUserDetailsByUsername
 }
 
 module.exports = routesFunctions

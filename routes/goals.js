@@ -7,7 +7,7 @@ const {verifyToken} = auth
 const {addNewGoal, 
     getGoalsForId, 
     deleteGoal, 
-    editProperties,
+    updateGoalProperties,
     getAccountIdForGoal, 
     returnGoalId, 
     getParticularGoalForId} = functions
@@ -18,10 +18,10 @@ const router = express.Router();
 router.patch('/update_goal', verifyToken, async(req, res) => {
     if (req.body.id && req.body.category && req.body.goal && req.body.goal_status) {
         try {
-            await editProperties(req.body.id, req.body.category, req.body.goal, req.body.goal_status)
+            await updateGoalProperties(req.body.id, req.body.category, req.body.goal, req.body.goal_status)
             const goal = await getParticularGoalForId(req.body.id)
             res.status(201).send({
-                message : "Changes updated",
+                message : "Updated",
                 goal
             })
         }
@@ -49,7 +49,7 @@ router.post('/add_new_goal', verifyToken, async(req, res) => {
             })
         }
         catch(error) {
-            res.send({errno : 121, message : error})
+            res.send({errno : 121, message : error.message})
         }
     }
     else {
@@ -75,7 +75,7 @@ router.delete('/:goalId', verifyToken, async(req, res) => {
         )
     }
     catch(error) {
-        res.send({errno : 123, message : error})
+        res.send({errno : 123, message : error.message})
     }
 })
 
@@ -85,7 +85,7 @@ router.get('/get_goals', verifyToken, async(req, res) => {
         res.status(200).send(result)
     }
     catch(error) {
-        res.send({errno : 1242, message : error})   
+        res.send({errno : 1242, message : error.message})   
     }
 })
 

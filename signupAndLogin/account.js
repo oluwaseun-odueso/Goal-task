@@ -6,13 +6,15 @@ require('dotenv').config()
 
 const router = express.Router();
 const {generateToken, verifyToken} = auth
-const {checkIfEnteredPasswordMatches, 
+const {checkIfEnteredPasswordsMatches, 
     checkIfEmailExists, 
     checkIfUserExists, 
-    updateAccount,
+    // changePassword,
+    updateAccountProperties,
     addUserToAccount, 
     hashEnteredPassword, 
-    getBasicUserDetails,
+    getBasicUserDetailsById,
+    getBasicUserDetailsByUsername,
     checkIfEnteredPasswordEqualsHashed,
     collectUsernameHashedPassword} = functions
 
@@ -26,7 +28,7 @@ router.post('/log_in', async(req, res) => {
                 const hashedPW = await collectUsernameHashedPassword(req.body.username)
                 const checkPassword = await checkIfEnteredPasswordEqualsHashed(req.body.password, hashedPW[0].password)
                 if (checkPassword === true) {
-                    const userDetails = await getBasicUserDetails(req.body.username)
+                    const userDetails = await getBasicUserDetailsByUsername(req.body.username)
                     const user = JSON.parse(JSON.stringify(userDetails[0]))
 
                     const token = await generateToken(user)
@@ -52,7 +54,7 @@ router.post('/log_in', async(req, res) => {
             }
         }
         catch(error) {
-            res.send({message : error})
+            res.send({message : error.message})
         }
     }
     else {
@@ -71,7 +73,7 @@ router.post('/signUp', async(req, res) => {
             if (check === false) {
                 const checkEmail = await checkIfEmailExists(req.body.email);
                 if (checkEmail === false) {
-                    const checkPW = await checkIfEnteredPasswordMatches(req.body.password, req.body.confirm_password);
+                    const checkPW = await checkIfEnteredPasswordsMatches(req.body.password, req.body.confirm_password);
                     if (checkPW == true) {
                         const hashedPassword = await hashEnteredPassword(req.body.password)
                         await addUserToAccount(req.body.username, req.body.first_name, req.body.last_name, req.body.email, hashedPassword);
@@ -102,7 +104,7 @@ router.post('/signUp', async(req, res) => {
             }   
         }
         catch(error) {
-            res.send({message : error})
+            res.send({message : error.message})
         }
     }
     else res.status(500).send({
@@ -110,22 +112,51 @@ router.post('/signUp', async(req, res) => {
         message : "All fields must be entered correctly"})
 })
 
+
 router.patch('/update_account_details', verifyToken, async(req, res) => {
-    if (req.body.property && req.body.newValue) {
-        try{
-            await updateAccount(req.user.id, req.body.property, req.body.newValue)
-            res.status(201).send({message : "A value has been updated."})
+    if (req.body.first_name && req.body.last_name && req.body.email) {
+        try {
+            await updateAccountProperties(req.body.first_name, req.body.last_name, req.body.email, req.user.id)
+            const details = await getBasicUserDetailsById(req.user.id)
+            res.status(201).send({
+                message : "Updated",
+                details
+            })
         }
         catch(error) {
-            res.send({message : error})
+            res.send({errno : 124, message : error.message})
         }
     }
     else {
         res.status(500).send({
             error:"104" ,
-            message : "Property must be entered correctly."
+            message : "All properties must be entered correctly."
         })
     }
 })
+
+// router.patch('/change_password', verifyToken, async(req, res) => {
+//     if (req.body.old_password && req.body.new_password && req.body.confirm_new_password) {
+//         try {
+//             const confirmNewPassword = await checkIfEnteredPasswordsMatches(req.body.new_password, req.body.confirm_new_password)
+//             if (confirmNewPassword == true) {
+//                 const hashedPassword = await hashEnteredPassword(req.body.new_password)
+//                 await changePassword(hashedPassword, req.user.id);
+//                 res.status(201).send({
+//                     message : "Password Updated"
+//                 })
+//             }
+//             else {
+//                 res.status(400).send({
+//                     errno:"115" ,
+//                     message : "Passwords don't match"
+//                 })
+//             }
+//         }
+//         catch (error) {
+//             res.send({errno : "106", message : error.message})
+//         }
+//     }
+// })
 
 module.exports = router
