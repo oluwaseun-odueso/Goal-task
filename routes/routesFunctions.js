@@ -25,15 +25,24 @@ function updateAccountProperties(first_name, last_name, email, account_id) {
     })
 }
 
-// function changePassword (password, account_id) {
-//     return new Promise((resolve, reject) => {
-//         let sql = `UPDATE accounts SET password = '${password}' WHERE id = ${account_id}`
-//         connection.query(sql, (error, result) => {
-//             if (error) reject(error)
-//             resolve(result)
-//         })
-//     })
-// }
+function changePassword (password, account_id) {
+    return new Promise((resolve, reject) => {
+        let sql = `UPDATE accounts SET password = '${password}' WHERE id = ${account_id}`
+        connection.query(sql, (error, result) => {
+            if (error) reject(error)
+            resolve(result)
+        })
+    })
+}
+
+function getGoalBydate(date, account_id) {
+    return new Promise((resolve, reject) => {
+        connection.query(`SELECT * FROM goals WHERE date(set_date) = '${date}' AND account_id = ${account_id}`, (error, result) => {
+            if (error) reject(error)
+            resolve(result)
+        })
+    })
+}
 
 function getParticularGoalForId(goalId) {
     return new Promise((resolve, reject) => {
@@ -217,7 +226,8 @@ const routesFunctions = {
     updateAccountProperties, 
     updateGoalProperties,
     returnGoalId,
-    // changePassword,
+    getGoalBydate,
+    changePassword,
     getParticularGoalForId,
     deleteGoal,
     getGoalsForId,

@@ -7,6 +7,7 @@ const {verifyToken} = auth
 const {addNewGoal, 
     getGoalsForId, 
     deleteGoal, 
+    getGoalBydate,
     updateGoalProperties,
     getAccountIdForGoal, 
     returnGoalId, 
@@ -60,32 +61,73 @@ router.post('/add_new_goal', verifyToken, async(req, res) => {
     }
 })
 
-router.delete('/:goalId', verifyToken, async(req, res) => {
-    try {
-        const accountId = await getAccountIdForGoal(req.params.goalId)
-        if (JSON.parse(JSON.stringify(accountId[0])).account_id == req.user.id) {
-            await deleteGoal(req.params.goalId)
-            res.status(201).send({message : "A goal has been deleted."})
+router.delete('/delete_goal', verifyToken, async(req, res) => {
+    if (req.body.goal_id) {
+        try {
+            const accountId = await getAccountIdForGoal(req.body.goal_id)
+            if (JSON.parse(JSON.stringify(accountId[0])).account_id == req.user.id) {
+                await deleteGoal(req.body.goal_id)
+                res.status(200).send({message : "A goal has been deleted."})
+            }
+            else (
+                res.status(401).send({
+                    error:"106" ,
+                    message : "Goal id does not exist within your goal(s)."
+                })
+            )
         }
-        else (
-            res.status(500).send({
-                error:"106" ,
-                message : "You're unauthorized to delete this goal."
-            })
-        )
+        catch(error) {
+            res.send({errno : 123, message : error.message})
+        }
     }
-    catch(error) {
-        res.send({errno : 123, message : error.message})
+})
+
+router.get('/get_a_goal', verifyToken, async(req, res) => {
+    if (req.body.goal_id) {
+        try{
+            const accountId = await getAccountIdForGoal(req.body.goal_id)
+            if (JSON.parse(JSON.stringify(accountId[0])).account_id == req.user.id) {
+                const goal = await getParticularGoalForId(req.body.goal_id)
+                res.status(200).send({
+                    message : goal})
+            }
+            else (
+                res.status(401).send({
+                    error:"106" ,
+                    message : "Goal id does not exist within your goal(s)."
+                })
+            )
+        }
+        catch (error) {
+            res.send({errno : 124, message : error.message})
+        }
     }
 })
 
 router.get('/get_goals', verifyToken, async(req, res) => {
     try {
         const result = await getGoalsForId(req.user.id)
-        res.status(200).send(result)
+        res.status(200).send({message : result})
     }
     catch(error) {
-        res.send({errno : 1242, message : error.message})   
+        res.send({errno : 142, message : error.message})   
+    }
+})
+
+router.get('/get_goal_by_date', verifyToken, async(req, res) => {
+    if (req.body.goal_date) {
+        try {
+            const result = await getGoalBydate(req.body.goal_date, req.user.id)
+            if (result.length >= 1) {
+                res.status(200).send({message : result})
+            }
+            else {
+                res.status(200).send({message : "You have no goal from this date."})
+            }
+        }
+        catch (error) {
+            res.send({errno : 144, message : error.message})
+        }
     }
 })
 
