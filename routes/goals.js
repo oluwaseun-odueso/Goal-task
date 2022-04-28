@@ -85,18 +85,24 @@ router.delete('/delete_goal', verifyToken, async(req, res) => {
 router.get('/get_a_goal', verifyToken, async(req, res) => {
     if (req.body.goal_id) {
         try{
-            const accountId = await getAccountIdForGoal(req.body.goal_id)
-            if (JSON.parse(JSON.stringify(accountId[0])).account_id == req.user.id) {
-                const goal = await getParticularGoalForId(req.body.goal_id)
-                res.status(200).send({
-                    message : goal})
+            const amount = await getGoalsForId(req.user.id)
+            if (amount.length >= 1) {
+                const accountId = await getAccountIdForGoal(req.body.goal_id)
+                if (JSON.parse(JSON.stringify(accountId[0])).account_id == req.user.id) {
+                    const goal = await getParticularGoalForId(req.body.goal_id)
+                    res.status(200).send({
+                        message : goal})
+                }
+                else {
+                    res.status(401).send({
+                        error:"106" ,
+                        message : "Goal id does not exist within your goal(s)."
+                    })
+                }
             }
-            else (
-                res.status(401).send({
-                    error:"106" ,
-                    message : "Goal id does not exist within your goal(s)."
-                })
-            )
+            else {
+                res.status(401).send({message : "You have no goal yet."})
+            }
         }
         catch (error) {
             res.send({errno : 124, message : error.message})
@@ -107,7 +113,12 @@ router.get('/get_a_goal', verifyToken, async(req, res) => {
 router.get('/get_goals', verifyToken, async(req, res) => {
     try {
         const result = await getGoalsForId(req.user.id)
-        res.status(200).send({message : result})
+        if (result.length >= 1) {
+            res.status(200).send({message : result})
+        }
+        else {
+            res.status(401).send({message : "You have no goal yet."})
+        }
     }
     catch(error) {
         res.send({errno : 142, message : error.message})   
@@ -122,7 +133,7 @@ router.get('/get_goal_by_date', verifyToken, async(req, res) => {
                 res.status(200).send({message : result})
             }
             else {
-                res.status(200).send({message : "You have no goal from this date."})
+                res.status(401).send({message : "You have no goal from this date."})
             }
         }
         catch (error) {
