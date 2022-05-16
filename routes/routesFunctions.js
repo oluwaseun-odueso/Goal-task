@@ -1,4 +1,3 @@
-const express = require('express');
 const connection = require('./databaseConnection')
 const bcrypt = require('bcrypt');
 require('dotenv').config()

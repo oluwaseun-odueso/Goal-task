@@ -3,15 +3,15 @@ require('dotenv').config();
 
 
 const transporter = nodemailer.createTransport({
-    service : "hotmail",
+    service : "gmail",
     auth: {
-        user: "180806080@live.unilag.edu.ng",
+        user: "backendseun@gmail.com",
         pass: process.env.EMAIL_PASSWORD
     }  
 });
 
 const options = {
-    from: "180806080@live.unilag.edu.ng",
+    from: "backendseun@gmail.com",
     to: "seunoduez@gmail.com",
     subject: "Sending email with node.js!",
     text: "Wow! That's simple!"
@@ -22,5 +22,5 @@ transporter.sendMail(options, function(err, info) {
         console.log(err);
         return;
     }
-    console.log("Sent: " + info.response);
+    console.log("Emial sent: " + info.response);
 })

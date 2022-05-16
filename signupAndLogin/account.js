@@ -5,7 +5,9 @@ const connection = require('../routes/databaseConnection')
 require('dotenv').config()
 
 const router = express.Router();
+
 const {generateToken, verifyToken} = auth
+
 const {checkIfEnteredPasswordsMatches, 
     checkIfEmailExists, 
     checkIfUserExists, 

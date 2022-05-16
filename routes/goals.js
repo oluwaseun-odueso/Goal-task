@@ -80,6 +80,12 @@ router.delete('/delete_goal', verifyToken, async(req, res) => {
             res.send({errno : 123, message : error.message})
         }
     }
+    else {
+        res.status(500).send({
+            error:"109" ,
+            message : "Property must be entered correctly."
+        })
+    }
 })
 
 router.get('/get_a_goal', verifyToken, async(req, res) => {
@@ -107,6 +113,12 @@ router.get('/get_a_goal', verifyToken, async(req, res) => {
         catch (error) {
             res.send({errno : 124, message : error.message})
         }
+    }
+    else {
+        res.status(500).send({
+            error:"109" ,
+            message : "Property must be entered correctly."
+        })
     }
 })
 
@@ -139,6 +151,12 @@ router.get('/get_goal_by_date', verifyToken, async(req, res) => {
         catch (error) {
             res.send({errno : 144, message : error.message})
         }
+    }
+    else {
+        res.status(500).send({
+            error:"109" ,
+            message : "Property must be entered correctly."
+        })
     }
 })
 
