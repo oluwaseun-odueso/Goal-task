@@ -34,6 +34,16 @@ function changePassword (password, account_id) {
     })
 }
 
+// function resetPassword(hashedPassword, email) {
+//     return new Promise((resolve, reject) => {
+//         let sql = `UPDATE accounts SET password = '${hashedPassword}' WHERE email = '${email}'`
+//         connection.query(sql, (error, result) => {
+//             if (error) reject(error)
+//             resolve(result)
+//         })
+//     })
+// }
+
 function getGoalBydate(date, account_id) {
     return new Promise((resolve, reject) => {
         connection.query(`SELECT * FROM goals WHERE date(set_date) = '${date}' AND account_id = ${account_id}`, (error, result) => {
@@ -227,6 +237,7 @@ const routesFunctions = {
     returnGoalId,
     getGoalBydate,
     changePassword,
+    // resetPassword,
     getParticularGoalForId,
     deleteGoal,
     getGoalsForId,

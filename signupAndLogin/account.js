@@ -1,17 +1,18 @@
 const express = require('express');
 const auth = require('./auth')
+const nodemailer = require('nodemailer');
 const functions = require('../routes/routesFunctions')
-const connection = require('../routes/databaseConnection')
 require('dotenv').config()
 
 const router = express.Router();
 
-const {generateToken, verifyToken} = auth
+const {generateToken, generateForgotPasswordToken, verifyToken, verifyForgotPasswordToken} = auth
 
 const {checkIfEnteredPasswordsMatches, 
     checkIfEmailExists, 
     checkIfUserExists, 
     changePassword,
+    // resetPassword,
     updateAccountProperties,
     addUserToAccount, 
     hashEnteredPassword, 
@@ -56,7 +57,8 @@ router.post('/log_in', async(req, res) => {
             }
         }
         catch(error) {
-            res.send({message : error.message})
+            res.send({errno: 162,
+                message : error.message})
         }
     }
     else {
@@ -176,5 +178,84 @@ router.patch('/change_password', verifyToken, async(req, res) => {
         })
     }
 })
+
+// router.patch('/reset_password', async(req, res) => {
+//     if (req.body.reset_token, req.body.new_password) {
+//         try {
+//             const hashedPassword = await hashEnteredPassword(req.body.new_password)
+//             console.log(hashedPassword)
+//             const email = await verifyForgotPasswordToken(req.body.reset_token)
+//             console.log(email)
+//             await resetPassword(hashedPassword, email);
+//             res.status(201).send({
+//                 message : "Your password has been reset, please login."
+//             })
+//         }
+//         catch (error) {
+//             res.send({errno : "106", message : error.message})
+//         }
+//     }
+//     else {
+//         res.status(500).send({
+//             error:"104" ,
+//             message : "Enter reset password token and new password."
+//         })
+//     }
+// })
+
+router.post('/forgot_password', async(req, res) => {
+    if (req.body.email) {
+        try {
+            const checkEmail = await checkIfEmailExists(req.body.email)
+            if (checkEmail == true) {
+                const token = await generateForgotPasswordToken({email: req.body.email})
+        
+                const transporter = nodemailer.createTransport({
+                    service : "gmail",
+                    auth: {
+                        user: "backendseun@gmail.com",
+                        pass: process.env.EMAIL_PASSWORD
+                    }  
+                });
+        
+                const options = {
+                    from: "backendseun@gmail.com",
+                    to: req.body.email,
+                    subject: "Sending email with node.js!",
+                    text: "Wow! That's simple! " + token
+                };
+        
+                transporter.sendMail(options, function(err, info) {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log("Email sent: " + info.response);
+                })
+                res.status(200).send({
+                    message : "Password reset link has been sent to email address.",
+                })
+        
+            }
+            else {
+                res.status(400).send({
+                    errno:"116" ,
+                    message : "Incorrect old password."
+                })
+            }
+        }
+        catch (error) {
+            res.send({errno: 161,
+                message : error.message})
+        }
+    }
+    else {
+        res.status(400).send({
+            errno:"110" ,
+            message : "Enter email"
+        })
+    }
+})
+
 
 module.exports = router

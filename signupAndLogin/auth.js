@@ -1,14 +1,35 @@
+const { reject } = require('bcrypt/promises');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 
 const mySecretKey = process.env.SECRET
+const forgotPasswordKey = process.env.FORGOT_PASSWORD_SECRET
 
 function generateToken(user) {
     return new Promise((resolve, reject) => {
         jwt.sign(user, mySecretKey, function(err, token) {
             if (err) reject(err)
             resolve(token)
+        })
+    })
+}
+
+
+function generateForgotPasswordToken(user) {
+    return new Promise((resolve, reject) => {
+        jwt.sign(user, forgotPasswordKey, function(err, token) {
+            if(err) reject(err)
+            resolve(token)
+        })
+    })
+}
+
+function verifyForgotPasswordToken(token) {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, forgotPasswordKey, function(err, decoded) {
+            if (err) reject(err)
+            resolve(decoded.email)
         })
     })
 }
@@ -30,7 +51,9 @@ function verifyToken(req, res, next) {
 
 const tokenFunctions = {
     generateToken,
-    verifyToken
+    verifyToken, 
+    generateForgotPasswordToken, 
+    verifyForgotPasswordToken
 }
 
 module.exports = tokenFunctions
