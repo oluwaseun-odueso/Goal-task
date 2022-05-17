@@ -12,7 +12,7 @@ const {checkIfEnteredPasswordsMatches,
     checkIfEmailExists, 
     checkIfUserExists, 
     changePassword,
-    // resetPassword,
+    resetPassword,
     updateAccountProperties,
     addUserToAccount, 
     hashEnteredPassword, 
@@ -179,29 +179,27 @@ router.patch('/change_password', verifyToken, async(req, res) => {
     }
 })
 
-// router.patch('/reset_password', async(req, res) => {
-//     if (req.body.reset_token, req.body.new_password) {
-//         try {
-//             const hashedPassword = await hashEnteredPassword(req.body.new_password)
-//             console.log(hashedPassword)
-//             const email = await verifyForgotPasswordToken(req.body.reset_token)
-//             console.log(email)
-//             await resetPassword(hashedPassword, email);
-//             res.status(201).send({
-//                 message : "Your password has been reset, please login."
-//             })
-//         }
-//         catch (error) {
-//             res.send({errno : "106", message : error.message})
-//         }
-//     }
-//     else {
-//         res.status(500).send({
-//             error:"104" ,
-//             message : "Enter reset password token and new password."
-//         })
-//     }
-// })
+router.patch('/reset_password', async(req, res) => {
+    if (req.body.reset_token, req.body.new_password) {
+        try {
+            const hashedPassword = await hashEnteredPassword(req.body.new_password)
+            const email = await verifyForgotPasswordToken(req.body.reset_token)
+            await resetPassword(hashedPassword, email);
+            res.status(201).send({
+                message : "Your password has been reset, please login."
+            })
+        }
+        catch (error) {
+            res.send({errno : "106", message : error.message})
+        }
+    }
+    else {
+        res.status(500).send({
+            error:"104" ,
+            message : "Enter reset password token and new password."
+        })
+    }
+})
 
 router.post('/forgot_password', async(req, res) => {
     if (req.body.email) {
