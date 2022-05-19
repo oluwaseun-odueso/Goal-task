@@ -2,22 +2,50 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const accountRoute = require('./signupAndLogin/account');
 const goalsRoute = require('./routes/goals');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
-
-
 app.use(bodyParser.json());
 
 app.use('/account', accountRoute);
 app.use('/goals', goalsRoute);
 
+// Extended: https://swagger.io/specification/#infoObject
+const swaggerOptions = {
+    swaggerDefinition: {
+        info: {
+            title: 'Goal Tracker API',
+            description: "Official Goal Tracker Page",
+            contact: {
+                name: "Oluwaseun"
+            },
+            servers: ["http://localhost:5000"]
+        }
+    },
+    apis: ['server.js', './routes/goals.js', './signupAndLogin/account.js']
+    // apis: ["server.js"]
+}
 
-// Get all
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+ 
+
+// Officialpage route 
+/**
+ * @swagger
+ * /goals:
+ *  get:
+ *    description: Official goal tracker page
+ *    parameters:
+ *    responses:
+ *      '200':
+ *         description: A successful response
+ */
 app.get('/', (req, res) => {
     res.send('Welcome to the official goal tracker page.');
 })
 
 // To listen to the server
 app.listen(5000);
-
-

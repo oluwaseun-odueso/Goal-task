@@ -2,6 +2,8 @@ const express = require('express');
 const auth = require('./auth')
 const nodemailer = require('nodemailer');
 const functions = require('../routes/routesFunctions')
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 require('dotenv').config()
 
 const router = express.Router();
@@ -21,8 +23,22 @@ const {checkIfEnteredPasswordsMatches,
     checkIfEnteredPasswordEqualsHashed,
     collectUsernameHashedPassword} = functions
 
+
+// Login route
+/**
+ * @swagger
+ * /login
+ *   post:
+ *     description: This helps a user to login to their account
+ *     parameters:
+ *     - username
+ *     - password
+ *     responses:
+ *       '200':
+ *          description: "You have successfully logged in."
+ */
  
-router.post('/log_in', async(req, res) => {
+router.post('/login', async(req, res) => {
     if (req.body.username && req.body.password) {
         try {
             const results = await checkIfUserExists(req.body.username)
@@ -70,6 +86,24 @@ router.post('/log_in', async(req, res) => {
 })
 
 
+// Sign up route
+/**
+ * @swagger
+ * /signUp
+ *   post:
+ *     description: This helps a new user to create an account
+ *     parameters:
+ *     - username
+ *     - first_name
+ *     - last_name
+ *     - email
+ *     - password
+ *     - confirm_password
+ *     responses:
+ *       '201':
+ *          description: "New user added."
+ */
+
 router.post('/signUp', async(req, res) => {
     if(req.body.username && req.body.first_name && req.body.last_name && req.body.email && req.body.password && req.body.confirm_password) {
         try {
@@ -116,6 +150,20 @@ router.post('/signUp', async(req, res) => {
         message : "All fields must be entered correctly"})
 })
 
+// Update route
+/**
+ * @swagger
+ * /update_account_details
+ *   patch:
+ *     description: This helps a user to update their account details
+ *     parameters:
+ *     - frist_name
+ *     - last_name
+ *     - email
+ *     responses:
+ *       '201':
+ *          description: "Updated."
+ */
 
 router.patch('/update_account_details', verifyToken, async(req, res) => {
     if (req.body.first_name && req.body.last_name && req.body.email) {
@@ -123,7 +171,7 @@ router.patch('/update_account_details', verifyToken, async(req, res) => {
             await updateAccountProperties(req.body.first_name, req.body.last_name, req.body.email, req.user.id)
             const details = await getBasicUserDetailsById(req.user.id)
             res.status(201).send({
-                message : "Updated",
+                message : "Updated.",
                 details
             })
         }
@@ -139,6 +187,22 @@ router.patch('/update_account_details', verifyToken, async(req, res) => {
     }
 })
 
+
+// Change password route
+/**
+ * @swagger
+ * /change_password
+ *   patch:
+ *     description: This helps a user to change their password
+ *     parameters:
+ *     - old_password
+ *     - new_password
+ *     - confirm_new_password
+ *     responses:
+ *       '201':
+ *          description: "Password updated, your new password is PASSWORD."
+ */
+
 router.patch('/change_password', verifyToken, async(req, res) => {
     if (req.body.old_password && req.body.new_password && req.body.confirm_new_password) {
         try {
@@ -150,7 +214,7 @@ router.patch('/change_password', verifyToken, async(req, res) => {
                     const hashedPassword = await hashEnteredPassword(req.body.new_password)
                     await changePassword(hashedPassword, req.user.id);
                     res.status(201).send({
-                        message : "Password Updated, your new password is " + (req.body.new_password).toString()
+                        message : "Password updated, your new password is " + (req.body.new_password).toString()
                     })
                 }
                 else {
@@ -179,6 +243,20 @@ router.patch('/change_password', verifyToken, async(req, res) => {
     }
 })
 
+// Reset password route
+/**
+ * @swagger
+ * /reset_password
+ *   post:
+ *     description: This helps a user to reset their password
+ *     parameters:
+ *     - reset_token
+ *     - new_password
+ *     responses:
+ *       '201':
+ *          description: "Your password has been reset, please login."
+ */
+
 router.patch('/reset_password', async(req, res) => {
     if (req.body.reset_token, req.body.new_password) {
         try {
@@ -200,6 +278,19 @@ router.patch('/reset_password', async(req, res) => {
         })
     }
 })
+
+// Forgot password route
+/**
+ * @swagger
+ * /forgot_password
+ *   post:
+ *     description: This helps a user who forgot their password create another.
+ *     parameters:
+ *     - new_email
+ *     responses:
+ *       '200':
+ *          description: Password reset link has been sent to email address.
+ */
 
 router.post('/forgot_password', async(req, res) => {
     if (req.body.email) {
