@@ -144,6 +144,68 @@ router.post('/login', async(req, res) => {
     }    
 })
 
+/**
+ * @swagger
+ * /account/signUp:
+ *   post:
+ *     summary: Sign up a new user
+ *     description: Creates account for a new user
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: user_sign_up_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           username:
+ *             type: string
+ *             required: true
+ *           first_name:
+ *             type: string
+ *             required: true
+ *           last_name:
+ *             type: string
+ *             required: true
+ *           email:
+ *             type: string
+ *             required: true
+ *           password:
+ *             type: string
+ *             required: true
+ *           confirm_password:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       201: 
+ *         description: New user added.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *       400:
+ *         description: Passwords don't match or cannot add an existing username or cannot add an existing username.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno:
+ *               type: string
+ *             message:
+ *               type: string
+ *       500:
+ *         description: All fields must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
+
 router.post('/signUp', async(req, res) => {
     console.log(req.body)
     if(req.body.username && req.body.first_name && req.body.last_name && req.body.email && req.body.password && req.body.confirm_password) {
