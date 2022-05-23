@@ -54,20 +54,22 @@ const router = express.Router();
  *             message:
  *               type: string
  *             goal:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                 account_id:
- *                   type: number
- *                 category:
- *                   type: string
- *                 goal: 
- *                   type: string
- *                 goal_status:
- *                   type: string
- *                 set_date: 
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   account_id:
+ *                     type: number
+ *                   category:
+ *                     type: string
+ *                   goal: 
+ *                     type: string
+ *                   goal_status:
+ *                     type: string
+ *                   set_date: 
+ *                     type: string
  *       500:
  *         description: Properties must be entered correctly
  *         schema:
@@ -136,20 +138,22 @@ router.patch('/update_goal', verifyToken, async(req, res) => {
  *             message:
  *               type: string
  *             goal:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                 account_id:
- *                   type: number
- *                 category:
- *                   type: string
- *                 goal: 
- *                   type: string
- *                 goal_status:
- *                   type: string
- *                 set_date: 
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   account_id:
+ *                     type: number
+ *                   category:
+ *                     type: string
+ *                   goal: 
+ *                     type: string
+ *                   goal_status:
+ *                     type: string
+ *                   set_date: 
+ *                     type: string
  *       500:
  *         description: Properties must be entered correctly
  *         schema:
@@ -283,20 +287,22 @@ router.delete('/delete_goal', verifyToken, async(req, res) => {
  *           type: object
  *           properties: 
  *             message:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                 account_id:
- *                   type: number
- *                 category:
- *                   type: string
- *                 goal: 
- *                   type: string
- *                 goal_status:
- *                   type: string
- *                 set_date: 
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   account_id:
+ *                     type: number
+ *                   category:
+ *                     type: string
+ *                   goal: 
+ *                     type: string
+ *                   goal_status:
+ *                     type: string
+ *                   set_date: 
+ *                     type: string
  *       401:
  *         description: Goal id does not exist within your goal(s)
  *         schema:
@@ -376,20 +382,22 @@ router.get('/get_a_goal', verifyToken, async(req, res) => {
  *           type: object
  *           properties: 
  *             message:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                 account_id:
- *                   type: number
- *                 category:
- *                   type: string
- *                 goal: 
- *                   type: string
- *                 goal_status:
- *                   type: string
- *                 set_date: 
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   account_id:
+ *                     type: number
+ *                   category:
+ *                     type: string
+ *                   goal: 
+ *                     type: string
+ *                   goal_status:
+ *                     type: string
+ *                   set_date: 
+ *                     type: string
  *       400:
  *         description: You have no goal yet
  *         schema:
@@ -442,20 +450,22 @@ router.get('/get_goals', verifyToken, async(req, res) => {
  *           type: object
  *           properties: 
  *             message:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                 account_id:
- *                   type: number
- *                 category:
- *                   type: string
- *                 goal: 
- *                   type: string
- *                 goal_status:
- *                   type: string
- *                 set_date: 
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   account_id:
+ *                     type: number
+ *                   category:
+ *                     type: string
+ *                   goal: 
+ *                     type: string
+ *                   goal_status:
+ *                     type: string
+ *                   set_date: 
+ *                     type: string
  *       401:
  *         description: You have no goal for this date
  *         schema:

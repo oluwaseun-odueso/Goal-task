@@ -287,18 +287,20 @@ router.post('/signUp', async(req, res) => {
  *             message:
  *               type: string
  *             details:
- *               type: object
- *               properties:
- *                 id:
- *                   type: number
- *                 username:
- *                   type: string
- *                 first_name: 
- *                   type: string
- *                 last_name:
- *                   type: string
- *                 email: 
- *                   type: string
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   username:
+ *                     type: string
+ *                   first_name: 
+ *                     type: string
+ *                   last_name:
+ *                     type: string
+ *                   email: 
+ *                     type: string
  *       500:
  *         description: All properties must be entered correctly
  *         schema:
@@ -399,7 +401,6 @@ router.patch('/change_password', verifyToken, async(req, res) => {
                     await changePassword(hashedPassword, req.user.id);
                     res.status(201).send({
                         message: "Password updated!"
-                        // message : "Password updated, your new password is " + (req.body.new_password).toString()
                     })
                 }
                 else {
