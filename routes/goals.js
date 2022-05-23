@@ -17,6 +17,67 @@ const {addNewGoal,
 const router = express.Router();
 
 
+/**
+ * @swagger
+ * /goals/update_goal:
+ *   patch:
+ *     summary: Updates a goal
+ *     description: Updates user's goal.
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: update_goal_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           id:
+ *             type: string
+ *             required: true
+ *           category:
+ *             type: string
+ *             required: true
+ *           goal:
+ *             type: string
+ *             required: true
+ *           goal_status:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       201: 
+ *         description: Updated.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *             goal:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 account_id:
+ *                   type: number
+ *                 category:
+ *                   type: string
+ *                 goal: 
+ *                   type: string
+ *                 gaol_status:
+ *                   type: string
+ *                 set_date: 
+ *                   type: string
+ *       500:
+ *         description: Properties must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 router.patch('/update_goal', verifyToken, async(req, res) => {
     if (req.body.id && req.body.category && req.body.goal && req.body.goal_status) {
@@ -35,7 +96,7 @@ router.patch('/update_goal', verifyToken, async(req, res) => {
     else {
         res.status(500).send({
             error:"109" ,
-            message : "Property must be entered correctly."
+            message : "Properties must be entered correctly."
         })
     }
 })
