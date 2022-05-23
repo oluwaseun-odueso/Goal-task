@@ -365,7 +365,7 @@ router.get('/get_a_goal', verifyToken, async(req, res) => {
  * /goals/get_goals:
  *   get:
  *     summary: Returns all goals
- *     description: Users can retrieve all their goals.
+ *     description: Users can access all their goals.
  *     comsumes:
  *       - application/json
  *     produces: 
@@ -417,7 +417,66 @@ router.get('/get_goals', verifyToken, async(req, res) => {
 })
 
 
-router.get('/get_goal_by_date', verifyToken, async(req, res) => {
+/**
+ * @swagger
+ * /goals/get_goals_by_date:
+ *   get:
+ *     summary: Returns all goals for a date
+ *     description: A user can access all goals for a date.
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: update_goal_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           goal_date:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       200: 
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 account_id:
+ *                   type: number
+ *                 category:
+ *                   type: string
+ *                 goal: 
+ *                   type: string
+ *                 goal_status:
+ *                   type: string
+ *                 set_date: 
+ *                   type: string
+ *       401:
+ *         description: You have no goal for this date
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ *       500:
+ *         description: Property must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
+
+router.get('/get_goals_by_date', verifyToken, async(req, res) => {
     if (req.body.goal_date) {
         try {
             const result = await getGoalBydate(req.body.goal_date, req.user.id)
@@ -425,7 +484,7 @@ router.get('/get_goal_by_date', verifyToken, async(req, res) => {
                 res.status(200).send({message : result})
             }
             else {
-                res.status(401).send({message : "You have no goal from this date."})
+                res.status(401).send({message : "You have no goal for this date."})
             }
         }
         catch (error) {
