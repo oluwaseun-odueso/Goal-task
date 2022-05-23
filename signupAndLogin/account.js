@@ -429,6 +429,47 @@ router.patch('/change_password', verifyToken, async(req, res) => {
 })
 
 
+/**
+ * @swagger
+ * /account/reset_password:
+ *   patch:
+ *     summary: Resets password
+ *     description: Helps a user who forgot their password reset their password
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: reset_password_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           reset_token:
+ *             type: string
+ *             required: true
+ *           new_password:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       201: 
+ *         description: Your password has been reset, please login.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *       500:
+ *         description: Enter reset password token and new password
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
+
 router.patch('/reset_password', async(req, res) => {
     if (req.body.reset_token, req.body.new_password) {
         try {
