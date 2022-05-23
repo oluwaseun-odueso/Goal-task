@@ -87,7 +87,7 @@ const {checkIfEnteredPasswordsMatches,
  *             message:
  *               type: string
  *       500:
- *         description: All inputs must be entered correctly
+ *         description: All properties must be entered correctly
  *         schema:
  *           type: object
  *           properties:
@@ -139,7 +139,7 @@ router.post('/login', async(req, res) => {
     else {
         res.status(500).send({
             errno:"112" ,
-            message : "All inputs must be entered correctly"
+            message : "All properties must be entered correctly"
         })
     }    
 })
@@ -196,7 +196,7 @@ router.post('/login', async(req, res) => {
  *             message:
  *               type: string
  *       500:
- *         description: All fields must be entered correctly
+ *         description: All properties must be entered correctly
  *         schema:
  *           type: object
  *           properties:
@@ -250,10 +250,65 @@ router.post('/signUp', async(req, res) => {
     }
     else res.status(500).send({
         errno : "101", 
-        message : "All fields must be entered correctly"})
+        message : "All properties must be entered correctly"})
 })
 
-
+/**
+ * @swagger
+ * /account/update_account_details:
+ *   patch:
+ *     summary: Updates a user's account details
+ *     description: Updates user's account details
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: new_user_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           first_name:
+ *             type: string
+ *             required: true
+ *           last_name:
+ *             type: string
+ *             required: true
+ *           email:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       201: 
+ *         description: Updated.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *             details:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 username:
+ *                   type: string
+ *                 first_name: 
+ *                   type: string
+ *                 last_name:
+ *                   type: string
+ *                 email: 
+ *                   type: string
+ *       500:
+ *         description: All properties must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 router.patch('/update_account_details', verifyToken, async(req, res) => {
     if (req.body.first_name && req.body.last_name && req.body.email) {
@@ -279,6 +334,7 @@ router.patch('/update_account_details', verifyToken, async(req, res) => {
 
 
 
+
 router.patch('/change_password', verifyToken, async(req, res) => {
     if (req.body.old_password && req.body.new_password && req.body.confirm_new_password) {
         try {
@@ -290,7 +346,8 @@ router.patch('/change_password', verifyToken, async(req, res) => {
                     const hashedPassword = await hashEnteredPassword(req.body.new_password)
                     await changePassword(hashedPassword, req.user.id);
                     res.status(201).send({
-                        message : "Password updated, your new password is " + (req.body.new_password).toString()
+                        message: "Password updated!"
+                        // message : "Password updated, your new password is " + (req.body.new_password).toString()
                     })
                 }
                 else {
@@ -319,6 +376,7 @@ router.patch('/change_password', verifyToken, async(req, res) => {
     }
 })
 
+
 router.patch('/reset_password', async(req, res) => {
     if (req.body.reset_token, req.body.new_password) {
         try {
@@ -340,6 +398,7 @@ router.patch('/reset_password', async(req, res) => {
         })
     }
 })
+
 
 
 router.post('/forgot_password', async(req, res) => {
@@ -378,8 +437,8 @@ router.post('/forgot_password', async(req, res) => {
             }
             else {
                 res.status(400).send({
-                    errno:"116" ,
-                    message : "Incorrect old password."
+                    errno:"116",
+                    message : "Email does not exist on profile."
                 })
             }
         }
@@ -389,7 +448,7 @@ router.post('/forgot_password', async(req, res) => {
         }
     }
     else {
-        res.status(400).send({
+        res.status(500).send({
             errno:"110" ,
             message : "Enter email"
         })

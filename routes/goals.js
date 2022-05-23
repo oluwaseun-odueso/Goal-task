@@ -17,6 +17,7 @@ const {addNewGoal,
 const router = express.Router();
 
 
+
 router.patch('/update_goal', verifyToken, async(req, res) => {
     if (req.body.id && req.body.category && req.body.goal && req.body.goal_status) {
         try {
