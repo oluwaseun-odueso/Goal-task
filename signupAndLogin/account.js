@@ -493,6 +493,43 @@ router.patch('/reset_password', async(req, res) => {
 })
 
 
+/**
+ * @swagger
+ * /account/forgot_password:
+ *   post:
+ *     summary: User who forgot their password
+ *     description: Sends reset link to user's email
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: email
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           email:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       200: 
+ *         description: Password reset linkn has been sent to email address.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *       500:
+ *         description: Enter email
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 router.post('/forgot_password', async(req, res) => {
     if (req.body.email) {
