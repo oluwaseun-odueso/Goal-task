@@ -333,6 +333,58 @@ router.patch('/update_account_details', verifyToken, async(req, res) => {
 })
 
 
+/**
+ * @swagger
+ * /account/change_password:
+ *   patch:
+ *     summary: Change user password
+ *     description: Helps a user change their password
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: change_password_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           old_password:
+ *             type: string
+ *             required: true
+ *           new_password:
+ *             type: string
+ *             required: true
+ *           confirm_password:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       201: 
+ *         description: Password updated!
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *       400:
+ *         description: Passwords don't match or Incorrect old password.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ *       500:
+ *         description: All properties must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 
 router.patch('/change_password', verifyToken, async(req, res) => {
