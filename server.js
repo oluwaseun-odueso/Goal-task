@@ -28,23 +28,12 @@ const swaggerOptions = {
 }
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
  
 
-// Officialpage route 
-/**
- * @swagger
- * /goals:
- *  get:
- *    description: Official goal tracker page
- *    parameters:
- *    responses:
- *      '200':
- *         description: A successful response
- */
 app.get('/', (req, res) => {
-    res.send('Welcome to the official goal tracker page.');
+    res.send('Home page.');
 })
 
 // To listen to the server

@@ -16,13 +16,14 @@ const {addNewGoal,
 
 const router = express.Router();
 
+
 router.patch('/update_goal', verifyToken, async(req, res) => {
     if (req.body.id && req.body.category && req.body.goal && req.body.goal_status) {
         try {
             await updateGoalProperties(req.body.id, req.body.category, req.body.goal, req.body.goal_status)
             const goal = await getParticularGoalForId(req.body.id)
             res.status(201).send({
-                message : "Updated",
+                message : "Updated.",
                 goal
             })
         }
@@ -37,6 +38,7 @@ router.patch('/update_goal', verifyToken, async(req, res) => {
         })
     }
 })
+
 
 router.post('/add_new_goal', verifyToken, async(req, res) => {
     if (req.body.category && req.body.goal && req.body.goal_status) {
@@ -60,6 +62,8 @@ router.post('/add_new_goal', verifyToken, async(req, res) => {
         })
     }
 })
+
+
 
 router.delete('/delete_goal', verifyToken, async(req, res) => {
     if (req.body.goal_id) {
@@ -87,6 +91,8 @@ router.delete('/delete_goal', verifyToken, async(req, res) => {
         })
     }
 })
+
+
 
 router.get('/get_a_goal', verifyToken, async(req, res) => {
     if (req.body.goal_id) {
@@ -122,6 +128,8 @@ router.get('/get_a_goal', verifyToken, async(req, res) => {
     }
 })
 
+
+
 router.get('/get_goals', verifyToken, async(req, res) => {
     try {
         const result = await getGoalsForId(req.user.id)
@@ -136,6 +144,7 @@ router.get('/get_goals', verifyToken, async(req, res) => {
         res.send({errno : 142, message : error.message})   
     }
 })
+
 
 router.get('/get_goal_by_date', verifyToken, async(req, res) => {
     if (req.body.goal_date) {

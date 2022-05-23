@@ -23,21 +23,80 @@ const {checkIfEnteredPasswordsMatches,
     checkIfEnteredPasswordEqualsHashed,
     collectUsernameHashedPassword} = functions
 
-
-// Login route
 /**
  * @swagger
- * /login
+ * /account/login:
  *   post:
- *     description: This helps a user to login to their account
+ *     summary: Logs in a user
+ *     description: Logs in a user into their account using their username and password.
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
  *     parameters:
- *     - username
- *     - password
+ *     - in: body
+ *       name: user_login_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           username:
+ *             type: string
+ *             required: true
+ *           password:
+ *             type: string
+ *             required: true
  *     responses:
- *       '200':
- *          description: "You have successfully logged in."
+ *       200: 
+ *         description: You have successfully logged in.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *             user:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 username:
+ *                   type: string
+ *                 first_name: 
+ *                   type: string
+ *                 last_name:
+ *                   type: string
+ *                 email: 
+ *                   type: string
+ *             token:
+ *               type: string
+ *       401:
+ *         description: Incorrect password
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno:
+ *               type: string
+ *             message:
+ *               type: string
+ *       400:
+ *         description: Username does not exist
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ *       500:
+ *         description: All inputs must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
  */
- 
+
 router.post('/login', async(req, res) => {
     if (req.body.username && req.body.password) {
         try {
@@ -59,7 +118,7 @@ router.post('/login', async(req, res) => {
                     })
                 } 
                 else {
-                    res.status(400).send({
+                    res.status(401).send({
                         errno:"116" ,
                         message : "Incorrect Password."
                     })
@@ -85,26 +144,8 @@ router.post('/login', async(req, res) => {
     }    
 })
 
-
-// Sign up route
-/**
- * @swagger
- * /signUp
- *   post:
- *     description: This helps a new user to create an account
- *     parameters:
- *     - username
- *     - first_name
- *     - last_name
- *     - email
- *     - password
- *     - confirm_password
- *     responses:
- *       '201':
- *          description: "New user added."
- */
-
 router.post('/signUp', async(req, res) => {
+    console.log(req.body)
     if(req.body.username && req.body.first_name && req.body.last_name && req.body.email && req.body.password && req.body.confirm_password) {
         try {
             const checkUser = await checkIfUserExists(req.body.username)
@@ -130,14 +171,14 @@ router.post('/signUp', async(req, res) => {
                 else {
                     res.status(400).send({
                         errno:"113" ,
-                        message : "Can't add an existing email."
+                        message : "Cannot add an existing email."
                     })
                 }    
             }
             else {
                 res.status(400).send({
                     errno:"111" ,
-                    message : "Can't add an existing username."
+                    message : "Cannot add an existing username."
                 })
             }   
         }
@@ -150,20 +191,7 @@ router.post('/signUp', async(req, res) => {
         message : "All fields must be entered correctly"})
 })
 
-// Update route
-/**
- * @swagger
- * /update_account_details
- *   patch:
- *     description: This helps a user to update their account details
- *     parameters:
- *     - frist_name
- *     - last_name
- *     - email
- *     responses:
- *       '201':
- *          description: "Updated."
- */
+
 
 router.patch('/update_account_details', verifyToken, async(req, res) => {
     if (req.body.first_name && req.body.last_name && req.body.email) {
@@ -188,20 +216,6 @@ router.patch('/update_account_details', verifyToken, async(req, res) => {
 })
 
 
-// Change password route
-/**
- * @swagger
- * /change_password
- *   patch:
- *     description: This helps a user to change their password
- *     parameters:
- *     - old_password
- *     - new_password
- *     - confirm_new_password
- *     responses:
- *       '201':
- *          description: "Password updated, your new password is PASSWORD."
- */
 
 router.patch('/change_password', verifyToken, async(req, res) => {
     if (req.body.old_password && req.body.new_password && req.body.confirm_new_password) {
@@ -243,20 +257,6 @@ router.patch('/change_password', verifyToken, async(req, res) => {
     }
 })
 
-// Reset password route
-/**
- * @swagger
- * /reset_password
- *   post:
- *     description: This helps a user to reset their password
- *     parameters:
- *     - reset_token
- *     - new_password
- *     responses:
- *       '201':
- *          description: "Your password has been reset, please login."
- */
-
 router.patch('/reset_password', async(req, res) => {
     if (req.body.reset_token, req.body.new_password) {
         try {
@@ -279,18 +279,6 @@ router.patch('/reset_password', async(req, res) => {
     }
 })
 
-// Forgot password route
-/**
- * @swagger
- * /forgot_password
- *   post:
- *     description: This helps a user who forgot their password create another.
- *     parameters:
- *     - new_email
- *     responses:
- *       '200':
- *          description: Password reset link has been sent to email address.
- */
 
 router.post('/forgot_password', async(req, res) => {
     if (req.body.email) {
