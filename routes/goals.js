@@ -64,7 +64,7 @@ const router = express.Router();
  *                   type: string
  *                 goal: 
  *                   type: string
- *                 gaol_status:
+ *                 goal_status:
  *                   type: string
  *                 set_date: 
  *                   type: string
@@ -102,6 +102,65 @@ router.patch('/update_goal', verifyToken, async(req, res) => {
 })
 
 
+/**
+ * @swagger
+ * /goals/add_new_goal:
+ *   post:
+ *     summary: Creates a new goal
+ *     description: A user can create a new goal.
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: create_goal_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           category:
+ *             type: string
+ *             required: true
+ *           goal:
+ *             type: string
+ *             required: true
+ *           goal_status:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       201: 
+ *         description: Updated.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *             goal:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 account_id:
+ *                   type: number
+ *                 category:
+ *                   type: string
+ *                 goal: 
+ *                   type: string
+ *                 goal_status:
+ *                   type: string
+ *                 set_date: 
+ *                   type: string
+ *       500:
+ *         description: Properties must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
+
 router.post('/add_new_goal', verifyToken, async(req, res) => {
     if (req.body.category && req.body.goal && req.body.goal_status) {
         try {
@@ -125,7 +184,52 @@ router.post('/add_new_goal', verifyToken, async(req, res) => {
     }
 })
 
-
+/**
+ * @swagger
+ * /goals/delete_goal:
+ *   delete:
+ *     summary: Deletes a goal
+ *     description: A user can delete a goal.
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: create_goal_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           goal_id:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       201: 
+ *         description: A goal has been deleted.
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: string
+ *       401:
+ *         description: Goal id does not exist within your goal(s)
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ *       500:
+ *         description: Property must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 router.delete('/delete_goal', verifyToken, async(req, res) => {
     if (req.body.goal_id) {
