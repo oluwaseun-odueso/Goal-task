@@ -258,7 +258,73 @@ router.delete('/delete_goal', verifyToken, async(req, res) => {
     }
 })
 
-
+/**
+ * @swagger
+ * /goals/get_a_goal:
+ *   get:
+ *     summary: Returns a goal
+ *     description: Users can retrieve a goal from their goal collection.
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     parameters:
+ *     - in: body
+ *       name: update_goal_details
+ *       schema: 
+ *         type: object
+ *         properties: 
+ *           goal_id:
+ *             type: string
+ *             required: true
+ *     responses:
+ *       200: 
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 account_id:
+ *                   type: number
+ *                 category:
+ *                   type: string
+ *                 goal: 
+ *                   type: string
+ *                 goal_status:
+ *                   type: string
+ *                 set_date: 
+ *                   type: string
+ *       401:
+ *         description: Goal id does not exist within your goal(s)
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ *       400:
+ *         description: You have no goal yet
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ *       500:
+ *         description: Property must be entered correctly
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 router.get('/get_a_goal', verifyToken, async(req, res) => {
     if (req.body.goal_id) {
@@ -279,7 +345,7 @@ router.get('/get_a_goal', verifyToken, async(req, res) => {
                 }
             }
             else {
-                res.status(401).send({message : "You have no goal yet."})
+                res.status(400).send({message : "You have no goal yet."})
             }
         }
         catch (error) {
