@@ -360,7 +360,46 @@ router.get('/get_a_goal', verifyToken, async(req, res) => {
     }
 })
 
-
+/**
+ * @swagger
+ * /goals/get_goals:
+ *   get:
+ *     summary: Returns all goals
+ *     description: Users can retrieve all their goals.
+ *     comsumes:
+ *       - application/json
+ *     produces: 
+ *       - application/json
+ *     responses:
+ *       200: 
+ *         schema: 
+ *           type: object
+ *           properties: 
+ *             message:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 account_id:
+ *                   type: number
+ *                 category:
+ *                   type: string
+ *                 goal: 
+ *                   type: string
+ *                 goal_status:
+ *                   type: string
+ *                 set_date: 
+ *                   type: string
+ *       400:
+ *         description: You have no goal yet
+ *         schema:
+ *           type: object
+ *           properties:
+ *             errno: 
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 router.get('/get_goals', verifyToken, async(req, res) => {
     try {
@@ -369,7 +408,7 @@ router.get('/get_goals', verifyToken, async(req, res) => {
             res.status(200).send({message : result})
         }
         else {
-            res.status(401).send({message : "You have no goal yet."})
+            res.status(400).send({message : "You have no goal yet."})
         }
     }
     catch(error) {
