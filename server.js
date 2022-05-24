@@ -4,6 +4,8 @@ const accountRoute = require('./signupAndLogin/account');
 const goalsRoute = require('./routes/goals');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+require('dotenv').config()
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -20,7 +22,7 @@ const swaggerOptions = {
             contact: {
                 name: "Oluwaseun"
             },
-            servers: ["http://localhost:5000"]
+            servers: [process.env.PRODUCTION_DOMAIN]
         }
     },
     apis: ['server.js', './routes/goals.js', './signupAndLogin/account.js']
