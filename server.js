@@ -7,6 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 require('dotenv').config()
 
 
+const PORT = process.env.PORT || 5000
 const app = express();
 app.use(bodyParser.json());
 
@@ -39,4 +40,4 @@ app.get('/', (req, res) => {
 })
 
 // To listen to the server
-app.listen(5000);
+app.listen(PORT);
