@@ -5,6 +5,7 @@ const goalsRoute = require('./routes/goals');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
+const PORT = process.env.PORT || 5000
 const app = express();
 app.use(bodyParser.json());
 
@@ -37,4 +38,4 @@ app.get('/', (req, res) => {
 })
 
 // To listen to the server
-app.listen(5000);
+app.listen(PORT);
