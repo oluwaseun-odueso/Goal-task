@@ -241,7 +241,7 @@ router.delete('/delete_goal', verifyToken, async(req, res) => {
             const accountId = await getAccountIdForGoal(req.body.goal_id)
             if (JSON.parse(JSON.stringify(accountId[0])).account_id == req.user.id) {
                 await deleteGoal(req.body.goal_id)
-                res.status(200).send({message : "A goal has been deleted."})
+                res.status(200).send({message : "Goal has been deleted."})
             }
             else (
                 res.status(401).send({

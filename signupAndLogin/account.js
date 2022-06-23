@@ -2,8 +2,6 @@ const express = require('express');
 const auth = require('./auth')
 const nodemailer = require('nodemailer');
 const functions = require('../routes/routesFunctions')
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
 require('dotenv').config()
 
 const router = express.Router();
@@ -225,7 +223,7 @@ router.post('/signUp', async(req, res) => {
                     else {
                         res.status(400).send({
                             errno:"115" ,
-                            message : "Passwords don't match"
+                            message : "Password and confirm password do not match"
                         })
                     }
                     
