@@ -205,7 +205,6 @@ router.post('/login', async(req, res) => {
  */
 
 router.post('/signUp', async(req, res) => {
-    console.log(req.body)
     if(req.body.username && req.body.first_name && req.body.last_name && req.body.email && req.body.password && req.body.confirm_password) {
         try {
             const checkUser = await checkIfUserExists(req.body.username)
@@ -226,7 +225,6 @@ router.post('/signUp', async(req, res) => {
                             message : "Password and confirm password do not match"
                         })
                     }
-                    
                 }
                 else {
                     res.status(400).send({
@@ -554,10 +552,8 @@ router.post('/forgot_password', async(req, res) => {
         
                 transporter.sendMail(options, function(err, info) {
                     if(err) {
-                        console.log(err);
                         return;
                     }
-                    console.log("Email sent: " + info.response);
                 })
                 res.status(200).send({
                     message : "Password reset link has been sent to email address.",
