@@ -1,14 +1,13 @@
 const mysql = require('mysql');
 
-var connection = mysql.createConnection({
-    host     : process.env.DB_HOST,
-    user     : process.env.DB_USER,
-    password : process.env.DB_PASSWORD,
-    database : process.env.DB_DATABASE 
+var connection = mysql.createPool({
+    host     : process.env.PRODUCTION_HOST,
+    user     : process.env.PRODUCTION_USER,
+    password : process.env.PRODUCTION_PASSWORD,
+    database : process.env.PRODUCTION_DATABASE 
 });
-
-connection.connect(() => {
-    console.log('Database has been connected')
-});
-connection.end
+// connection.connect(() => {
+//     console.log('Database has been connected')
+// });
+console.log('Database connected')
 module.exports = connection

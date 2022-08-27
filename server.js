@@ -4,6 +4,7 @@ const accountRoute = require('./signupAndLogin/account');
 const goalsRoute = require('./routes/goals');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const connection = require('./routes/databaseConnection')
 require('dotenv').config()
 
 
